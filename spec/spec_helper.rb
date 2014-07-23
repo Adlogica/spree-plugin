@@ -23,14 +23,15 @@ require 'ffaker'
 # in spec/support/ and its subdirectories.
 Dir[File.join(File.dirname(__FILE__), 'support/**/*.rb')].each { |f| require f }
 
-# Requires factories defined in spree_core
-require 'spree/testing_support/factories'
-require 'spree/testing_support/controller_requests'
+# Requires factories and other useful helpers defined in spree_core.
 require 'spree/testing_support/authorization_helpers'
+require 'spree/testing_support/capybara_ext'
+require 'spree/testing_support/controller_requests'
+require 'spree/testing_support/factories'
 require 'spree/testing_support/url_helpers'
 
-# Requires factories defined in lib/spree_pm_product_extension/factories.rb
-require 'spree_pm_product_extension/factories'
+# Requires factories defined in lib/spree_savvyads_extension/factories.rb
+require 'spree_savvyads_extension/factories'
 
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
