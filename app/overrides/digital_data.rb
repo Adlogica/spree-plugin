@@ -86,7 +86,7 @@ Deface::Override.new(:virtual_path => 'spree/shared/_head',
 
               <% end %>
             <% end %>
-            <% if flash[:commerce_tracking] %>
+	    <% if @order && order_just_completed?(@order) %>
                 digitalData.transaction = {
                   transactionID: "<%= @order.number %>",
                   profile: {
@@ -203,47 +203,74 @@ Deface::Override.new(:virtual_path => 'spree/shared/_head',
                 }]
             <% end %>
         </script>
+<!-- Snowplow starts plowing -->
+<% if !current_store.org_id.empty? && !current_store.app_id.empty? %>
+
+<% 
+  org_id = current_store.org_id
+  app_id = current_store.app_id
+%>
+
 <script type="text/javascript">
   (function() {
     if ( document.addEventListener ) {
       document.addEventListener( "DOMContentLoaded", function(){
         document.removeEventListener( "DOMContentLoaded", arguments.callee, false );
-          $("#add-to-cart-button").click(function(event){
-            event.preventDefault();
-            event.stopPropagation();
-            var quantity = $("#quantity").val();
-            var propertyMap = {quantity: quantity};
-                for(var attr in digitalData.product[0].attributes){
-                   propertyMap[pm__convertToUnderscore(attr)] = digitalData.product[0].attributes[attr];
+          var sp_custom = document.createElement("script"); sp_custom.type = "text/javascript"; sp_custom.async = false;
+          sp_custom.src = ("https:" == document.location.protocol ? "https" : "http") + "://d1hmvgyttpradw.cloudfront.net/<%= org_id %>/<%= app_id %>/adlogica_tracker.js";
+          var s_custom = document.getElementsByTagName("script")[0]; s_custom.parentNode.insertBefore(sp_custom, s_custom);
+	  $("#add-to-cart-button").click(function(event){
+		var quantity = $("#quantity").val();
+		var propertyMap = {quantity: quantity};
+    		for(var attr in digitalData.product[0].attributes){
+       		   propertyMap[pm__convertToUnderscore(attr)] = digitalData.product[0].attributes[attr];
+    		}
+    		for(var attr in digitalData.product[0].category){
+        	  propertyMap[pm__convertToUnderscore(attr)] = digitalData.product[0].category[attr];
+    		}
+    		for(var attr in digitalData.product[0].productInfo){
+        	  propertyMap[pm__convertToUnderscore(attr)] = digitalData.product[0].productInfo[attr];
+    		}
+		var event_object = {
+                  "eventInfo": {
+                    "action": "add_to_cart",
+                    "type": "unstructured"
+                  },
+                  "attributes": propertyMap,
+                  "context": custom_context,
+                  "pixel_definition": "",
+                  "pixel_id": ""
                 }
-                for(var attr in digitalData.product[0].category){
-                  propertyMap[pm__convertToUnderscore(attr)] = digitalData.product[0].category[attr];
-                }
-                for(var attr in digitalData.product[0].productInfo){
-                  propertyMap[pm__convertToUnderscore(attr)] = digitalData.product[0].productInfo[attr];
-                }
-                window._snaq.push(["trackUnstructEvent", "add_to_cart", propertyMap, custom_context]);
-            setTimeout(function(){
-              $(event.currentTarget).closest("form").submit();
-            }, 800);
-            return false;
-          });
+		pm_cookie.setCookie("_adlogica_event", window.btoa(JSON.stringify(event_object)), 300000, "/", window.location.hostname);
 
-          $("#search-bar input[type=submit]").click(function(event){
-            event.preventDefault();
-            event.stopPropagation();
-            var keywords = $("#keywords").val();
-            window._snaq.push(["trackStructEvent", "Ecomm", "search", "Search on topbar", "keywords", keywords, custom_context]);
-            setTimeout(function(){
-                      $(event.currentTarget).closest("form").submit();
-                    }, 800);
-            return false;
-          });
+		return true;
+	  });
+
+	  $("#search-bar input[type=submit]").click(function(event){
+		var keywords = $("#keywords").val();
+		 var event_object = {
+                  "eventInfo": {
+                    "action": "search",
+                    "type": "structured",
+		    "name": "Search on topbar"
+                  },
+		  "category": { 
+		    "primaryCategory": "Ecomm"
+		  },
+                  "attributes": {"property":"keywords","value": keywords},
+                  "context": custom_context,
+                  "pixel_definition": "",
+                  "pixel_id": ""
+                }
+                pm_cookie.setCookie("_adlogica_event", window.btoa(JSON.stringify(event_object)), 300000, "/", window.location.hostname);
+		return true;
+	  });
         }, false );
     }
   })();
 </script>
 <!-- Snowplow stops plowing -->
+<% end %>
 	'
 )
 

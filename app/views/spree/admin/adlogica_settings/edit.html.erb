@@ -1,0 +1,36 @@
+<%= render :partial => 'spree/admin/shared/configuration_menu' %>
+<% content_for :page_title do %>
+  <%= Spree.t(:adlogica_settings) %>
+<% end %>
+
+<%= form_tag admin_adlogica_settings_path, :method => :put do %>
+    <div id="preferences" data-hook>
+
+    <fieldset class="general no-border-top">
+
+      <%= fields_for :store do |f| %>
+        <div class="field">
+          <%= f.label :org_id, "Organization ID" %>
+          <br />
+          <%= f.text_field :org_id %>
+        </div>
+        <div class="field">
+          <%= f.label :app_id, "Application ID" %>
+          <br />
+          <%= f.text_field :app_id %>
+        </div>
+
+      <% end %>
+
+
+      <div class="form-buttons filter-actions actions" data-hook="buttons">
+        <%= button Spree.t('actions.update'), 'refresh' %>
+        <span class="or"><%= Spree.t(:or) %></span>
+        <%= link_to_with_icon 'remove', Spree.t('actions.cancel'), edit_admin_adlogica_settings_url, :class => 'button' %>
+      </div>
+
+    </fieldset>
+
+  </div>
+<% end %>
+
