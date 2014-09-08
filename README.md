@@ -1,4 +1,4 @@
-SpreePmProductExtension
+Spree Savvyads Extension
 =======================
 
 Introduction goes here.
@@ -6,17 +6,17 @@ Introduction goes here.
 Installation
 ------------
 
-Add spree_pm_product_extension to your Gemfile:
+Add spree_savvyads_extension to your Gemfile:
 
 ```ruby
-gem 'spree_pm_product_extension'
+gem 'spree_savvyads_extension'
 ```
 
 Bundle your dependencies and run the installation generator:
 
 ```shell
 bundle
-bundle exec rails g spree_pm_product_extension:install
+bundle exec rails g spree_savvyads_extension:install
 ```
 
 Testing
@@ -33,6 +33,6 @@ When testing your applications integration with this extension you may use it's 
 Simply add this require statement to your spec_helper:
 
 ```ruby
-require 'spree_pm_product_extension/factories'
+require 'spree_savvyads_extension/factories'
 ```
 
